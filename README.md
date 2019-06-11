@@ -1,4 +1,4 @@
 # FREE-reversi
-(figure/demo.png)
+![figure](figure/demo.png)
 # reversi.py
 start up this to play game
