@@ -22,6 +22,7 @@ class piece():
         self.sprite = MySprite(x-width/2,y-height/2,filename)
         self.color = c
 
+
     def turn(self,c):
         self.color = c
         if self.color > 0:
@@ -47,7 +48,8 @@ class board():
     def __init__(self,x,y):
         filename = os.path.join(figpath,"board.png")
         self.sprite = MySprite(x,y,filename)
-        self.bd = []
+        self.bd = [piece(235,240,1),piece(235,300,-1),piece(295,240,-1),piece(295,300,1)]
+
         self.num = 0
         self.maxNum = 48
         #距離の閾値
@@ -58,8 +60,8 @@ class board():
 
     #置いたらTrue置けなかったらFalse
     def put(self,piece):
+        self.lines = self.calcLine(piece)
         if self.putable(piece):
-            self.lines = self.calcLine(piece)
             self.turn(piece,self.lines)
             self.bd.append(piece)
             self.num += 1
@@ -74,6 +76,11 @@ class board():
         for i,p in enumerate(self.bd):
             if pygame.sprite.collide_mask(piece.sprite,p.sprite):
                 return False
+
+        #ひっくり返せないなら置けない
+        if not self.turn(piece,self.lines,isTurn=False):
+            return False
+
         return True
 
     # 引数cと同じ色をリストにする
@@ -128,7 +135,7 @@ class board():
         return lineList
 
 
-    def turn(self,piece,lines):
+    def turn(self,piece,lines,isTurn=True):
         c = piece.color
 
         for line in lines:
@@ -162,12 +169,16 @@ class board():
 
                 #最後までたどり着いたら全てひっくり返す
                 if j == dists.shape[0]-1:
-                    for k in col_ind:
-                        self.bd[k].turn(c)
+                    if isTurn:
+                        for k in col_ind:
+                            self.bd[k].turn(c)
+                    else:
+                        return True
                 else:
                     #最後に行く前に同じ色が出たらアウト
                     if collide[j].color == c:
                         break
+        return False
 
     def draw(self,screen):
         self.sprite.draw(screen)

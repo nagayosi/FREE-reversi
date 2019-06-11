@@ -11,6 +11,7 @@ from board import piece
 class field():
     def __init__(self,pos):
         self.board = board(pos[0],pos[1])
+
         self.font = pygame.font.SysFont(None,80)
 
     def put(self,pos,c):
@@ -22,6 +23,6 @@ class field():
     def draw(self,screen):
         return self.board.draw(screen)
 
-    #テスト用
-    def test(self):
-        return self.board.listBoard(1)
+    # def result(self):
+    #     if self.board.num >= self.board.maxNum:
+    #
