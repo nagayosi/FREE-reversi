@@ -1,5 +1,4 @@
 # FREE-reversi
-we have many many bug
-
+![figure](figure/demo.png)
 # reversi.py
 start up this to play game
