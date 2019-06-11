@@ -23,10 +23,10 @@ class piece():
         self.color = c
 
     def turn(self,c):
-        self.c = c
-        if self.c > 0:
+        self.color = c
+        if self.color > 0:
             filename = os.path.join(figpath,"black.png")
-        elif self.c < 0:
+        elif self.color < 0:
             filename = os.path.join(figpath,"white.png")
         self.sprite.changeImage(filename)
 
@@ -94,24 +94,35 @@ class board():
         same_color_list = self.listBoard(c)
         lineList = []
 
+        #幅を持たせる
+        dx = 6
+
         for p in same_color_list:
             offx = sprite.x - p.sprite.x
             offy = sprite.y - p.sprite.y
 
-            if offx < 0:
-                x = sprite.x
+            if offx < 0:#置く方が左
+                x = sprite.x-dx/2
                 offx = abs(offx)
+                sx = dx/2
+                gx = offx+dx/2
             else:
                 x = p.sprite.x
+                sx = offx+dx/2
+                gx = dx/2
 
-            if offy < 0:
+            if offy < 0:#置く方が上
                 y = sprite.y
                 offy = abs(offy)
+                sy = dx/2
+                gy = offy+dx/2
             else:
                 y = p.sprite.y
+                sy = offy+dx/2
+                gy = dx/2
 
-            surf = pygame.Surface((offx,offy),pygame.SRCALPHA)
-            # pygame.draw.line(surf,(255,0,0),(sprite.x,sprite.y),(p.sprite.x,p.sprite.y),2)
+            surf = pygame.Surface((offx+dx,offy+dx),pygame.SRCALPHA)
+            pygame.draw.line(surf,(255,0,0),(sx,sy),(gx,gy),2)
             lineList.append(lineSprite(x,y,surf))
 
         return lineList
@@ -130,6 +141,10 @@ class board():
 
             dists = np.array([collide[i].calcDist(piece) for i in range(len(collide))])
 
+            #衝突するものがなければスキップ
+            if dists.shape[0] <= 0:
+                continue
+
             #距離順にSort
             index = np.argsort(dists)
             dists = np.sort(dists)
@@ -146,7 +161,7 @@ class board():
                         break
 
                 #最後までたどり着いたら全てひっくり返す
-                if j == dists.shape[0]:
+                if j == dists.shape[0]-1:
                     for k in col_ind:
                         self.bd[k].turn(c)
                 else:
@@ -158,8 +173,7 @@ class board():
         self.sprite.draw(screen)
         for piece in self.bd:
             piece.draw(screen)
-        if self.lines is not None:
-            for line in self.lines:
-                line.draw(screen)
-
+        # if self.lines is not None:
+        #     for line in self.lines:
+        #         line.draw(screen)
         return

@@ -19,12 +19,6 @@ def main():
         screen.fill((122,255,122))
         colors = f.draw(screen)
 
-#--------------------------------------------------
-#test
-        # if flag == 1:
-            # print(f.test())
-#--------------------------------------------------
-
         pygame.display.update() # 画面更新
 
         pygame.time.wait(20) # 更新間隔。多分ミリ秒
@@ -41,9 +35,7 @@ def main():
                     print(f.test())
             if event.type == MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                print("c={},color={}".format(c,colors))
                 c = f.put(pos,c)
-
 
 
 if __name__ == "__main__":
