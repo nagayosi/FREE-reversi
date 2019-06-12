@@ -18,8 +18,9 @@ class piece():
         self.image = pygame.image.load(filename).convert_alpha()
         width = self.image.get_width()
         height = self.image.get_height()
-        #中心座標（sprite.x,sprite.y）
-        self.sprite = MySprite(x-width/2,y-height/2,filename)
+        #中心座標は（??_sp.x,??_sp.y）
+        self.object_sp = MySprite(x-width/2,y-height/2,filename)
+        self.collide_sp = MySprite(x-width/2,y-height/2,filename,isCol=True)
         self.color = c
 
 
@@ -29,17 +30,17 @@ class piece():
             filename = os.path.join(figpath,"black.png")
         elif self.color < 0:
             filename = os.path.join(figpath,"white.png")
-        self.sprite.changeImage(filename)
+        self.object_sp.changeImage(filename)
 
     def calcDist(self,piece):#piece間距離
-        x = piece.sprite.x
-        y = piece.sprite.y
-        dist = ((self.sprite.x - x)**2 + (self.sprite.y - y)**2)**0.5
+        x = piece.object_sp.x
+        y = piece.object_sp.y
+        dist = ((self.object_sp.x - x)**2 + (self.object_sp.y - y)**2)**0.5
 
         return dist
 
     def draw(self,screen):
-        self.sprite.draw(screen)
+        self.object_sp.draw(screen)
 
 
 
@@ -47,21 +48,24 @@ class piece():
 class board():
     def __init__(self,x,y):
         filename = os.path.join(figpath,"board.png")
+        music_path = os.path.join(os.getcwd(),"music")
         self.sprite = MySprite(x,y,filename)
         self.bd = [piece(235,240,1),piece(235,300,-1),piece(295,240,-1),piece(295,300,1)]
-
         self.num = 0
         self.maxNum = 48
         #距離の閾値
         self.r_thre = 100
         #色と色との線
         self.lines = None
+        self.put_se = pygame.mixer.Sound(os.path.join(music_path,"put_piece.ogg"))
+        self.put_se.set_volume(1.0)
 
 
     #置いたらTrue置けなかったらFalse
     def put(self,piece):
         self.lines = self.calcLine(piece)
         if self.putable(piece):
+            self.put_se.play(1)
             self.turn(piece,self.lines)
             self.bd.append(piece)
             self.num += 1
@@ -74,7 +78,7 @@ class board():
             return False
 
         for i,p in enumerate(self.bd):
-            if pygame.sprite.collide_mask(piece.sprite,p.sprite):
+            if pygame.sprite.collide_mask(piece.object_sp,p.object_sp):
                 return False
 
         #ひっくり返せないなら置けない
@@ -95,18 +99,18 @@ class board():
     #spriteとして線を保存
     def calcLine(self,pie):
         c = pie.color
-        sprite = pie.sprite
+        sprite = pie.object_sp
 
         #置く色と同じ色をリストに
         same_color_list = self.listBoard(c)
         lineList = []
 
         #幅を持たせる
-        dx = 6
+        dx = 10
 
         for p in same_color_list:
-            offx = sprite.x - p.sprite.x
-            offy = sprite.y - p.sprite.y
+            offx = sprite.x - p.object_sp.x
+            offy = sprite.y - p.object_sp.y
 
             if offx < 0:#置く方が左
                 x = sprite.x-dx/2
@@ -114,7 +118,7 @@ class board():
                 sx = dx/2
                 gx = offx+dx/2
             else:
-                x = p.sprite.x
+                x = p.object_sp.x
                 sx = offx+dx/2
                 gx = dx/2
 
@@ -124,7 +128,7 @@ class board():
                 sy = dx/2
                 gy = offy+dx/2
             else:
-                y = p.sprite.y
+                y = p.object_sp.y
                 sy = offy+dx/2
                 gy = dx/2
 
@@ -142,7 +146,7 @@ class board():
             collide = []
             col_ind = []
             for j,pie in enumerate(self.bd):
-                if pygame.sprite.collide_mask(line,pie.sprite):
+                if pygame.sprite.collide_mask(line,pie.collide_sp):
                         collide.append(pie)
                         col_ind.append(j)
 
@@ -168,7 +172,7 @@ class board():
                         break
 
                 #最後までたどり着いたら全てひっくり返す
-                if j == dists.shape[0]-1:
+                if j == dists.shape[0]-1 and j > 0:
                     if isTurn:
                         for k in col_ind:
                             self.bd[k].turn(c)

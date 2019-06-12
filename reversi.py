@@ -14,10 +14,15 @@ def main():
     f = fie.field((20,20))
     c = 1
     flag = 0
+    mouseDown_flag = False
 
     while(True):
         screen.fill((122,255,122))
         colors = f.draw(screen)
+        if pygame.mouse.get_pressed()[0]:
+            pos = pygame.mouse.get_pos()
+            f.putdemo(pos,c,screen)
+            mouseDown_flag = True
 
         pygame.display.update() # 画面更新
 
@@ -33,9 +38,10 @@ def main():
                     sys.exit()
                 elif event.key == K_t:
                     print(f.test())
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == MOUSEBUTTONUP and mouseDown_flag:
                 pos = pygame.mouse.get_pos()
                 c = f.put(pos,c)
+                mouseDown_flag = False
 
 
 if __name__ == "__main__":

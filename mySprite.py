@@ -5,7 +5,7 @@ import numpy as np
 import sys
 
 class MySprite(sprite.Sprite):
-    def __init__(self,x,y,filename):
+    def __init__(self,x,y,filename,isCol=False):
         sprite.Sprite.__init__(self)
         self.image = pygame.image.load(filename).convert_alpha()
         width = self.image.get_width()
@@ -13,7 +13,13 @@ class MySprite(sprite.Sprite):
         self.x = x+width/2
         self.y = y+height/2
         self.rect = Rect(x,y,width,height)
-        self.mask = pygame.mask.from_surface(self.image)
+        if isCol:
+            self.core_r = 18
+            surf = pygame.Surface((width,height),pygame.SRCALPHA)
+            pygame.draw.circle(surf,(255,0,0),(int(width/2),int(height/2)),self.core_r)
+            self.mask = pygame.mask.from_surface(surf)
+        else:
+            self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
         pass
