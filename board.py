@@ -50,9 +50,9 @@ class board():
         filename = os.path.join(figpath,"board.png")
         music_path = os.path.join(os.getcwd(),"music")
         self.sprite = MySprite(x,y,filename)
-        self.bd = [piece(235,240,1),piece(235,300,-1),piece(295,240,-1),piece(295,300,1)]
-        self.num = 0
-        self.maxNum = 48
+        self.bd = [piece(237,240,1),piece(237,300,-1),piece(300,240,-1),piece(300,300,1)]
+        self.num = 4
+        self.maxNum = 54
         #距離の閾値
         self.r_thre = 100
         #色と色との線

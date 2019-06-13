@@ -17,24 +17,48 @@ class field():
         self.bgm = pygame.mixer.Sound(os.path.join(music_path,"bacchus.ogg"))
         self.bgm.set_volume(0.3)
         self.bgm.play(-1)
+        self.bgm_end = pygame.mixer.Sound(os.path.join(music_path,"passionate.ogg"))
+        self.bgm_end.set_volume(0.3)
         self.cant_put_se = pygame.mixer.Sound(os.path.join(music_path,"cant_put.ogg"))
         self.cant_put_se.set_volume(1.0)
+        self.now_turn = 1
 
-    def put(self,pos,c):
-        if self.board.put(piece(pos[0],pos[1],c)):
-            return -c
+    def put(self,pos):
+        if self.board.put(piece(pos[0],pos[1],self.now_turn)):
+            self.now_turn = -self.now_turn
+            if self.board.num == 40:
+                pygame.mixer.stop()
+                self.bgm_end.play(-1)
+            return self.now_turn
         else:
             self.cant_put_se.play(1)
-            return c
+            return self.now_turn
 
-    def putdemo(self,pos,c,screen):
-        pie = piece(pos[0],pos[1],c)
+    def pass_turn(self):
+        self.now_turn = -self.now_turn
+
+
+    def putdemo(self,pos,screen):
+        pie = piece(pos[0],pos[1],self.now_turn)
         pie.draw(screen)
 
 
     def draw(self,screen):
-        return self.board.draw(screen)
+        self.board.draw(screen)
+        return self.isBattle()
 
-    # def result(self):
-    #     if self.board.num >= self.board.maxNum:
-    #
+    def isBattle(self):
+        if self.board.num >= self.board.maxNum:
+            return False
+        else:
+            return True
+
+    def result(self):
+        blackNum = len(self.board.listBoard(1))
+        whiteNum = len(self.board.listBoard(-1))
+        if blackNum > whiteNum:# black-win
+            return 1
+        elif blackNum < whiteNum:# white-win
+            return -1
+        else:# draw
+            return 0
