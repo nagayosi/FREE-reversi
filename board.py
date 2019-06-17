@@ -74,9 +74,8 @@ class board():
 
     #置いたときに重なるかどうかチェック
     def putable(self,piece):
-        if self.num >= self.maxNum:
-            return False
 
+        #かぶっているなら置けない
         for i,p in enumerate(self.bd):
             if pygame.sprite.collide_mask(piece.object_sp,p.object_sp):
                 return False
@@ -84,6 +83,15 @@ class board():
         #ひっくり返せないなら置けない
         if not self.turn(piece,self.lines,isTurn=False):
             return False
+
+        #設置上限なら置けない
+        if self.num >= self.maxNum:
+            return False
+
+        #ボードから中心がはみ出すと置けない
+        if not self.sprite.rect.collidepoint(piece.object_sp.x,piece.object_sp.y):
+            return False
+
 
         return True
 

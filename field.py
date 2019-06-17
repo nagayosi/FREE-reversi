@@ -8,11 +8,16 @@ from board import piece
 import os
 
 
+
+
 class field():
     def __init__(self,pos):
         self.board = board(pos[0],pos[1])
         self.font = pygame.font.SysFont(None,80)
         music_path = os.path.join(os.getcwd(),"music")
+        self.stack = [2,2]
+        self.black_img = pygame.image.load(os.path.join("figure","stack_black.png")).convert_alpha()
+        self.white_img = pygame.image.load(os.path.join("figure","stack_white.png")).convert_alpha()
         pygame.mixer.init()
         self.bgm = pygame.mixer.Sound(os.path.join(music_path,"bacchus.ogg"))
         self.bgm.set_volume(0.3)
@@ -26,6 +31,7 @@ class field():
     def put(self,pos):
         if self.board.put(piece(pos[0],pos[1],self.now_turn)):
             self.now_turn = -self.now_turn
+            self.stack[self.now_turn//2] += 1
             if self.board.num == 40:
                 pygame.mixer.stop()
                 self.bgm_end.play(-1)
@@ -36,6 +42,9 @@ class field():
 
     def pass_turn(self):
         self.now_turn = -self.now_turn
+
+    # def stack_show(self):
+
 
 
     def putdemo(self,pos,screen):
